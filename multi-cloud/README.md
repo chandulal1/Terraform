@@ -47,3 +47,34 @@ terraform.tfvars provides the login credentials.
 main.tf draws the map of the servers.
 
 terraform.tfstate remembers what was actually built.
+
+
+Differance b/w Variables.tf and Terraform.tfvars
+Variables.tf is the "Template," and Terraform.tfvars is the "Actual Data."
+
+Think of it like a Job Application Form:
+
+variables.tf is the blank form that says: "Name: ____, Age: ____, Address: ____."
+
+terraform.tfvars is the paper you filled out: "Name: Chandu, Age: 25, Address: 123 Cloud St."
+
+1. Security (The most important reason)
+If you put your actual Azure Client Secret inside variables.tf and upload your code to GitHub, everyone can see your password.
+
+variables.tf is safe to upload (it only shows the structure of the data).
+
+terraform.tfvars is added to your .gitignore file so it stays only on your computer.
+
+2. Reusability
+Imagine you want to deploy the same infrastructure for Development and Production.
+
+Instead of writing two different sets of main.tf files, you use the same variables.tf (the template) but two different .tfvars files:
+
+dev.tfvars: Sets vm_size = "Standard_B1s" (Free)
+
+prod.tfvars: Sets vm_size = "Standard_D2s_v3" (Powerful)
+
+You just tell Terraform which one to use:
+terraform apply -var-file="prod.tfvars"
+
+
