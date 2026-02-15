@@ -104,7 +104,29 @@ resource "azurerm_linux_virtual_machine" "minimal_vm" {
     version   = "latest"
   }
 }
+resource "azurerm_network_security_group" "nsg" {
+  name                = "chandu-nsg"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
 
+  security_rule {
+    name                       = "SSH"
+    priority                   = 1001
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "22"
+    source_address_prefix      = "*" # For security, you could put your home IP here
+    destination_address_prefix = "*"
+  }
+}
+
+# IMPORTANT: You must link the NSG to your Network Interface
+resource "azurerm_network_interface_security_group_association" "example" {
+  network_interface_id      = azurerm_network_interface.nic.id
+  network_security_group_id = azurerm_network_security_group.nsg.id
+}
 # (Note: Azure requires VNET, Subnet, and NIC - ensure these are in your file)
 # The B1s instance uses the NIC associated with the NSG above.
 
